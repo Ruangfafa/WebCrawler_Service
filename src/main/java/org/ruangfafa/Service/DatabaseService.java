@@ -49,7 +49,7 @@ public class DatabaseService {
                         "WHERE DATEDIFF(CURDATE(), lastCraw) >= (" +
                             "SELECT value FROM ServerDB.Config WHERE `key` = 'coolDown'" +
                         ")";
-        try (PreparedStatement stmt = conn.prepareStatement(sql);
+            try (PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 String url = rs.getString("sellerUrl");
@@ -195,6 +195,8 @@ public class DatabaseService {
             stmt.executeUpdate("GRANT SELECT, DELETE ON " + schemaName + ".Task TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT SELECT, UPDATE ON " + schemaName + ".State TO '" + username + "'@'%'");
 
+            stmt.executeUpdate("GRANT SELECT ON ServerDB.Config TO '" + username + "'@'%'");
+            stmt.executeUpdate("GRANT SELECT ON ServerDB.State TO '" + username + "'@'%'");
             // 授权写入公共数据库的部分表
             stmt.executeUpdate("GRANT INSERT ON ServerDB.TargetSellers TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Sellers TO '" + username + "'@'%'");
