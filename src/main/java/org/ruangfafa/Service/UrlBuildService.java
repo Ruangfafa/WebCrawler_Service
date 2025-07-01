@@ -23,10 +23,22 @@ public class UrlBuildService {
             case "tb_c2c_1": case "tb_c2c_2":
                 return "https://shop" + identifier + ".taobao.com/category-" + cp + ".htm";
             case "tm":
-                if (cp.contains(":")) {
-                    return "https://" + identifier + ".tmall.com/search.htm?pv=" + cp;
+                if (cp.contains("_:_")) {
+                    String[] parts = cp.split("_:_", 2);
+                    String prefix = parts[0];
+                    String value = parts[1];
+
+                    if (prefix.equals("p")) {
+                        return "https://" + identifier + ".tmall.com/search.htm?pv=" + value;
+                    } else if (prefix.equals("c")) {
+                        return "https://" + identifier + ".tmall.com/category-" + value + ".htm";
+                    } else {
+                        Logger.log("⚠️ 未知的 tm category_pv 前缀: " + prefix, WORKDIC);
+                        return "";
+                    }
                 } else {
-                    return "https://" + identifier + ".tmall.com/category-" + cp + ".htm";
+                    Logger.log("⚠️ 无效的 tm category_pv 格式: " + cp, WORKDIC);
+                    return "";
                 }
             case "tm_global":
                 if (cp.contains(":")) {

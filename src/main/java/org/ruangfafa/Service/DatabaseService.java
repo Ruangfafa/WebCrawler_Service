@@ -293,6 +293,19 @@ public class DatabaseService {
             return false;
         }
     }
+    public static int getState(Connection conn, long device) {
+        String schemaName = (device == 0) ? "ServerDB" : "ClientDB_" + device;
+        String sql = "SELECT state FROM " + schemaName + ".State";
 
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("state");
+            }
+        } catch (Exception e) {
+            Logger.log("❌ 查询 " + schemaName + ".State 状态失败: " + e.getMessage(), "Application.java");
+        }
+        return 0; // 默认返回 0 表示“运行中”或“未知状态”
+    }
 
 }
