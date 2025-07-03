@@ -15,7 +15,9 @@ public class VerticalTest_tm {
             //assignTargetSellersUrls(DB);
             //assignSellersUrls(DB);
             //assignSellerCategoryUrls(DB);
-
+            //productTagNeat(DB);
+            //assignProductUrls(DB);
+            assignProductUrls_c(DB);
         }
 
 }

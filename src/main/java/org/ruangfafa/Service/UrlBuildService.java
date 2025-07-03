@@ -53,4 +53,18 @@ public class UrlBuildService {
                 return "";
         }
     }
+
+    public static String buildProductUrl(String pageType, String id) {
+        switch (pageType) {
+            case "tm":
+                return "https://detail.tmall.com/item.htm?id=" + id;
+            case "tm_global":
+                return "";
+            case "jd_zy_922474": case "jd_zy_401022": case "jd_fs_922474":
+                return "";
+            default:
+                Logger.log("❌ 未知的页面类型", WORKDIC);
+                return "";
+        }
+    }
 }

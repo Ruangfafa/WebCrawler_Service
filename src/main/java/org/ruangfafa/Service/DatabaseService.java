@@ -199,6 +199,7 @@ public class DatabaseService {
             stmt.executeUpdate("GRANT SELECT ON ServerDB.State TO '" + username + "'@'%'");
             // 授权写入公共数据库的部分表
             stmt.executeUpdate("GRANT INSERT ON ServerDB.TargetSellers TO '" + username + "'@'%'");
+            stmt.executeUpdate("GRANT INSERT ON ServerDB.Comment TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Sellers TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Classificate TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.ProductTag TO '" + username + "'@'%'");
@@ -307,5 +308,50 @@ public class DatabaseService {
         }
         return 0; // 默认返回 0 表示“运行中”或“未知状态”
     }
+    public static int rebuildTaskProductTable(Connection conn) {
+        final String WORKDIC = "DatabaseService.java";
 
+        try (Statement stmt = conn.createStatement()) {
+            // 删除 TaskProduct 表
+            stmt.executeUpdate("DROP TABLE IF EXISTS ServerDB.TaskProduct");
+
+            // 新建 TaskProduct 表
+            stmt.executeUpdate("CREATE TABLE ServerDB.TaskProduct (" +
+                    "pageType VARCHAR(255) NOT NULL, " +
+                    "id VARCHAR(255) NOT NULL)");
+
+            // 插入唯一组合
+            String insertSql = "INSERT INTO ServerDB.TaskProduct (pageType, id) " +
+                    "SELECT DISTINCT pageType, id FROM ServerDB.ProductTag " +
+                    "WHERE id IS NOT NULL AND id <> ''";
+            int affected = stmt.executeUpdate(insertSql);
+            Logger.log("✅ 已插入 " + affected + " 条记录到 ServerDB.TaskProduct", WORKDIC);
+            return affected;
+        } catch (SQLException e) {
+            Logger.log("❌ rebuildTaskProductTable 失败: " + e.getMessage(), WORKDIC);
+            return -1;
+        }
+    }
+
+
+    public static List<Map<String, String>> pullPageTypeAndId(Connection conn) {
+        List<Map<String, String>> result = new ArrayList<>();
+        String sql = "SELECT pageType, id FROM ServerDB.TaskProduct";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Map<String, String> map = new HashMap<>();
+                map.put("pageType", rs.getString("pageType"));
+                map.put("id", rs.getString("id"));
+                result.add(map);
+            }
+
+        } catch (SQLException e) {
+            Logger.log("❌ pullPageTypeAndId 查询失败: " + e.getMessage(), WORKDIC);
+        }
+
+        return result;
+    }
 }
