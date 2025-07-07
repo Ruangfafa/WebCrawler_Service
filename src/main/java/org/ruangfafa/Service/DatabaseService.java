@@ -199,6 +199,7 @@ public class DatabaseService {
             stmt.executeUpdate("GRANT SELECT ON ServerDB.State TO '" + username + "'@'%'");
             // 授权写入公共数据库的部分表
             stmt.executeUpdate("GRANT INSERT ON ServerDB.TargetSellers TO '" + username + "'@'%'");
+            stmt.executeUpdate("GRANT INSERT ON ServerDB.TaskRanking TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Comment TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Sellers TO '" + username + "'@'%'");
             stmt.executeUpdate("GRANT INSERT ON ServerDB.Classificate TO '" + username + "'@'%'");
